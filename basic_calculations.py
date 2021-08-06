@@ -1,6 +1,9 @@
 """Some simple calculations needed for the friction simulator.
 
-Copyright 2021 (c) Rachel Xie
+Sources for the value of mu were https://www.engineersedge.com/coeffients_of_friction.htm
+and Nelson Physics 11 textbook. Where ranges were given, the lowest value was chosen. For
+the value of aluminum on ice, the recommended value from The Friction of Saline Ice on
+Aluminum by Christopher Wallen-Russell and Ben Lishman.
 """
 import math
 
@@ -63,7 +66,10 @@ def get_weight_comps(m: float, incline: float = 0.0, g: float = GRAVITY) -> tupl
 
 def object_slips(m: float, mu_obj: float, mu_ramp: float, incline: float = 0.0,
                  g: float = GRAVITY) -> bool:
-    """Return whether an object of mass m will slip under given conditions."""
+    """Return whether an object of mass m will slip under given conditions.
+
+    Values of mu are from the coefficients.csv file. (They represent static friction.)
+    """
     weight, normal_force, down_ramp_force = get_weight(m, incline, g)
 
     # how does mu work again??

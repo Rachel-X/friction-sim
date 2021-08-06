@@ -16,5 +16,8 @@ def handle_mouse_click(event: pygame.event.Event, screen: pygame.Surface) -> Non
         pygame.display.update()  # todo: read tutorial about a better way to do this
         pygame.time.wait(150)
         # pygame.display.update()
+    elif button_pressed == 3:
+        # how to change ramp angle from visualization??
+        ...
 
     # todo: finish based on a1_part2
