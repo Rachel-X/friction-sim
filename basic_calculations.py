@@ -21,12 +21,22 @@ MATERIALS = {
 
 
 def get_ramp_height(ramp_angle: float, screen_width: int) -> float:
-    """Return the height of the ramp based on ramp_angle and width of the screen
-    on which it will be displayed.
+    """Return the height of the ramp (shaped like a right triangle) based on
+    ramp_angle and width of the screen on which it will be displayed. ramp_angle
+    represents an angle in degrees.
 
     Preconditions:
         - 0 <= ramp_angle < 90
         - 0 < screen_width
+
+    >>> get_ramp_height(30, 50)
+    14.433756729740644
+    >>> get_ramp_height(42, 147)
+    66.17969725589124
+    >>> get_ramp_height(0, 150)
+    0.0
+    >>> get_ramp_height(89, 500)
+    14322.490407689786
     """
     rad_angle = math.radians(ramp_angle)
 
@@ -35,11 +45,20 @@ def get_ramp_height(ramp_angle: float, screen_width: int) -> float:
 
 def get_ramp_length(ramp_angle: float, screen_width: int) -> float:
     """Return the length of the slope part of the ramp (the hypotenuse) for the
-    given ramp_angle and screen_width.
+    given ramp_angle and screen_width. ramp_angle represents an angle in degrees.
 
     Preconditions:
         - 0 <= ramp_angle < 90
         - 0 < screen_width
+
+    >>> get_ramp_length(30, 50)
+    28.867513459481287
+    >>> get_ramp_length(42, 147)
+    98.90400562606865
+    >>> get_ramp_length(0, 150)
+    75.0
+    >>> get_ramp_length(89, 500)
+    14324.672124637476
     """
     base = screen_width / 2
     height = get_ramp_height(ramp_angle, screen_width)
@@ -50,6 +69,7 @@ def get_ramp_length(ramp_angle: float, screen_width: int) -> float:
 def calculate_if_slips(mass: float, materials: List[str], ramp_angle: float,
                        g: float = GRAVITY) -> bool:
     """Return whether an object of the given mass will slip under the given conditions.
+    ramp_angle represents an angle in degrees.
 
     Preconditions:
         - 0 <= ramp_angle < 90
@@ -57,11 +77,18 @@ def calculate_if_slips(mass: float, materials: List[str], ramp_angle: float,
         - len(materials) == 2
         - materials[0] in {'ice', 'steel', 'wood', 'aluminum'} and
             materials[1] in {'ice', 'steel', 'wood', 'aluminum'}
+        - 0 <= g
+
+    >>> calculate_if_slips(15, ['steel', 'steel'], 30)
+    False
+    >>> calculate_if_slips(20, ['ice', 'aluminum'], 40)
+    True
+    >>> calculate_if_slips(20, ['ice', 'aluminum'], 40, 0)
+    False
     """
     rad_angle = math.radians(ramp_angle)
     weight = mass * g
-    normal_force = get_normal_force(mass, ramp_angle, g)
-    friction_force = get_friction_force(mass, ramp_angle, materials, g)
+    friction_force = get_friction_force(mass, rad_angle, materials, g)
     down_ramp_comp = weight * math.sin(rad_angle)
 
     return friction_force < down_ramp_comp
@@ -72,6 +99,20 @@ def get_friction_force(mass: float, incline: float, materials: List[str],
     """Return the friction force of an object with given mass, on a ramp that is
     incline radians from the horizontal.
 
+    Preconditions:
+        - 0 <= incline < math.pi / 2
+        - 0 < mass
+        - len(materials) == 2
+        - materials[0] in {'ice', 'steel', 'wood', 'aluminum'} and
+            materials[1] in {'ice', 'steel', 'wood', 'aluminum'}
+        - 0 <= g
+
+    >>> get_friction_force(15, math.pi / 4, ['steel', 'steel'])
+    81.07686353084954
+    >>> get_friction_force(20, math.pi / 6, ['ice', 'aluminum'])
+    16.974097914175
+    >>> get_friction_force(20, math.pi / 6, ['ice', 'aluminum'], 0)
+    0.0
     """
     normal_force = get_normal_force(mass, incline, g)
     mu = MATERIALS[materials[0]][materials[1]]
@@ -85,8 +126,18 @@ def get_normal_force(mass: float, incline: float, g: float = GRAVITY) -> float:
 
     Preconditions:
         - 0 <= incline < math.pi / 2
+        - 0 < mass
+        - 0 <= g
+
+    >>> get_normal_force(15, math.pi / 6)
+    127.30573435631248
+    >>> get_normal_force(20, math.pi / 4)
+    138.59292911256333
+    >>> get_normal_force(15, math.pi / 6, 0)
+    0.0
+    >>> get_normal_force(15, math.pi / 4, 1.0)
+    10.606601717798213
     """
-    # todo: it'd make more sense for these two functions to give you components, collapse them?
     weight = mass * g
 
     # weight times cos of the incline gives the component into the ramp
@@ -94,6 +145,10 @@ def get_normal_force(mass: float, incline: float, g: float = GRAVITY) -> float:
 
     return adj_component
 
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
 
 # def get_weight_comps(m: float, incline: float = 0.0, g: float = GRAVITY) -> \
 #         tuple[float, float, float]:
