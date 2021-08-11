@@ -7,6 +7,7 @@ from pygame.colordict import THECOLORS
 from basic_calculations import calculate_if_slips, get_friction_force, get_normal_force, \
     get_ramp_height, \
     get_ramp_length
+from menu import Menu
 import interactions
 
 SCREEN_SIZE = 1000, 750  # width, then height
@@ -49,6 +50,9 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
                     screen.get_height() * 0.75 - math.cos(rad_angle) * (ramp_length / 4) -
                     ramp_height / 4)]
 
+    menu_rect = pygame.Rect(screen.get_width() / 2, 5, 100, 30)
+    mats_menu1 = Menu(['one', 'two', 'three'], menu_rect)
+
     while True:
         # todo: move all this drawing nonsense to its own function
 
@@ -56,7 +60,9 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
         pygame.draw.polygon(screen, THECOLORS['gold'], mass_coords)
 
         draw_stats(screen, ramp_angle, mass, ['steel', 'steel'])
-        draw_about_slipping(screen, ramp_angle, mass, ['steel', 'steel'])
+        # draw_about_slipping(screen, ramp_angle, mass, ['steel', 'steel'])
+
+        mats_menu1.draw(screen)
 
         pygame.display.flip()  # updates the display
 
@@ -66,7 +72,8 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
             break
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            interactions.handle_mouse_click(event, screen)
+            mats_menu1.update(screen, event)
+            screen.fill('aliceblue')
 
     pygame.display.quit()
 
