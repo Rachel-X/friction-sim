@@ -5,10 +5,8 @@ from typing import List
 import pygame
 from pygame.colordict import THECOLORS
 from basic_calculations import calculate_if_slips, get_friction_force, get_normal_force, \
-    get_ramp_height, \
-    get_ramp_length
+    get_ramp_height, get_ramp_length, MATERIALS
 from menu import Menu
-import interactions
 
 SCREEN_SIZE = 1000, 750  # width, then height
 
@@ -50,8 +48,11 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
                     screen.get_height() * 0.75 - math.cos(rad_angle) * (ramp_length / 4) -
                     ramp_height / 4)]
 
-    menu_rect = pygame.Rect(screen.get_width() / 2, 5, 100, 30)
-    mats_menu1 = Menu(['one', 'two', 'three'], menu_rect)
+    menu_rect1 = pygame.Rect(screen.get_width() * 0.75, 5, 100, 30)
+    menu_rect2 = pygame.Rect(screen.get_width() * 0.75 + menu_rect1.width + 10, 5, 100, 30)
+    materials = list(MATERIALS.keys())
+    mats_menu1 = Menu(materials, menu_rect1)
+    mats_menu2 = Menu(materials, menu_rect2)
 
     while True:
         # todo: move all this drawing nonsense to its own function
@@ -60,9 +61,10 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
         pygame.draw.polygon(screen, THECOLORS['gold'], mass_coords)
 
         draw_stats(screen, ramp_angle, mass, ['steel', 'steel'])
-        # draw_about_slipping(screen, ramp_angle, mass, ['steel', 'steel'])
+        draw_about_slipping(screen, ramp_angle, mass, ['steel', 'steel'])
 
         mats_menu1.draw(screen)
+        mats_menu2.draw(screen)
 
         pygame.display.flip()  # updates the display
 
@@ -73,6 +75,7 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             mats_menu1.update(screen, event)
+            mats_menu2.update(screen, event)
             screen.fill('aliceblue')
 
     pygame.display.quit()
@@ -126,8 +129,8 @@ def draw_about_slipping(screen: pygame.Surface, ramp_angle: float, mass: float,
     else:
         answer_text = text_font.render('No.', True, (10, 10, 10))
 
-    screen.blit(question_text, (screen.get_width() / 2, 15))
-    screen.blit(answer_text, (screen.get_width() / 2 + 5, 55))
+    screen.blit(question_text, (screen.get_width() / 3, 25))
+    screen.blit(answer_text, (screen.get_width() / 3 + 5, 55))
 
 
 if __name__ == '__main__':

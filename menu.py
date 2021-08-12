@@ -1,6 +1,5 @@
 """
-A dropdown menu. (partially based on
-https://stackoverflow.com/questions/59236523/trying-creating-dropdown-menu-pygame-but-got-stuck/65369938#65369938
+A dropdown menu.
 """
 from typing import List
 
