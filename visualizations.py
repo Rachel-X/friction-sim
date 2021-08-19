@@ -7,6 +7,7 @@ from pygame.colordict import THECOLORS
 from basic_calculations import calculate_if_slips, get_friction_force, get_normal_force, \
     get_ramp_height, get_ramp_length, MATERIALS
 from menu import Menu
+from button import ArrowButton
 
 SCREEN_SIZE = 1000, 750  # width, then height
 
@@ -33,6 +34,7 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
     ramp_base = math.sqrt(ramp_length ** 2 - ramp_height ** 2)
     # the base of the ramp is also just the screen width divided by 2
 
+    # todo: move all this drawing coordinates nonsense to its own function
     ramp_coords = [(screen.get_width() / 4, screen.get_height() * 0.75 + ramp_height / 2),
                    (screen.get_width() * 0.75, screen.get_height() * 0.75 + ramp_height / 2),
                    (screen.get_width() * 0.75, screen.get_height() * 0.75 - ramp_height / 2)]
@@ -54,17 +56,31 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
     mats_menu1 = Menu(materials, menu_rect1)
     mats_menu2 = Menu(materials, menu_rect2)
 
+    ramp_arrow_up_shape = pygame.Rect(300, 300, 25, 65)
+    ramp_arrow_up = ArrowButton(True, ramp_arrow_up_shape, 30)
+    ramp_arrow_down_shape = pygame.Rect(300, 350, 25, 65)
+    ramp_arrow_down = ArrowButton(False, ramp_arrow_down_shape)
+
     while True:
-        # todo: move all this drawing nonsense to its own function
+        ramp_arrow_up.draw(screen)
+        ramp_arrow_down.draw(screen)
 
         pygame.draw.polygon(screen, THECOLORS['salmon'], ramp_coords)
         pygame.draw.polygon(screen, THECOLORS['gold'], mass_coords)
 
-        draw_stats(screen, ramp_angle, mass, ['steel', 'steel'])
-        draw_about_slipping(screen, ramp_angle, mass, ['steel', 'steel'])
-
         mats_menu1.draw(screen)
         mats_menu2.draw(screen)
+
+        mats1 = mats_menu1.current_choice
+        mats2 = mats_menu2.current_choice
+
+        if mats1 >= 0 and mats2 >= 0:
+            draw_stats(screen, ramp_angle, mass, [mats_menu1.current_text,
+                                                  mats_menu2.current_text])
+            draw_about_slipping(screen, ramp_angle, mass, [mats_menu1.current_text,
+                                                           mats_menu2.current_text])
+        else:
+            draw_stats(screen, ramp_angle, mass)
 
         pygame.display.flip()  # updates the display
 
@@ -76,13 +92,15 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mats_menu1.update(screen, event)
             mats_menu2.update(screen, event)
+            ramp_arrow_up.update(screen, event)
+            ramp_arrow_down.update(screen, event)
             screen.fill('aliceblue')
 
     pygame.display.quit()
 
 
 def draw_stats(screen: pygame.Surface, ramp_angle: float, mass: float,
-               materials: List[str]) -> None:
+               materials: List[str] = None) -> None:
     """Draw the statistics in the top left corner of the screen.
 
     These stats include the angle of the ramp, the mass of the block in kg, and the
@@ -94,7 +112,11 @@ def draw_stats(screen: pygame.Surface, ramp_angle: float, mass: float,
     # this number of sig figs is arbitrary -- not really good science
     # also note that these two assume the default value of gravity, 9.8
     normal_force_display = round(get_normal_force(mass, rad_angle), 2)
-    friction_force_display = round(get_friction_force(mass, rad_angle, materials), 2)
+
+    if materials is not None:
+        friction_force_display = round(get_friction_force(mass, rad_angle, materials), 2)
+    else:
+        friction_force_display = 'N/A'
 
     title_font = pygame.font.SysFont('arialrounded', 25)
     text_font = pygame.font.SysFont('arial', 20)
@@ -134,4 +156,4 @@ def draw_about_slipping(screen: pygame.Surface, ramp_angle: float, mass: float,
 
 
 if __name__ == '__main__':
-    draw_base_set_up(5, 25)
+    draw_base_set_up(30, 15)
