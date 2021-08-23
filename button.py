@@ -1,4 +1,5 @@
 """A button class! (test)"""
+from typing import Optional
 
 import pygame
 
@@ -30,7 +31,7 @@ class ArrowButton:
 
         screen.blit(my_image, my_image.get_rect(center=self.shape.center))
 
-    def update(self, screen: pygame.Surface, event: pygame.event.Event):
+    def update(self, event: pygame.event.Event) -> Optional[int]:
         """Handle changes."""
         button_pressed = event.button
         mouse_pos = event.pos
@@ -38,7 +39,9 @@ class ArrowButton:
         if button_pressed == 1 and self.shape.collidepoint(mouse_pos):
             if self.point_up:
                 self.current_value += 1
-                print(self.current_value)
+                return self.current_value
             else:
                 self.current_value -= 1
-                print(self.current_value)
+                return self.current_value
+
+        return None

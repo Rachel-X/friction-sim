@@ -28,45 +28,24 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
     pygame.display.set_icon(icon)
     screen.fill(THECOLORS['aliceblue'])
 
-    rad_angle = math.radians(ramp_angle)
-    ramp_height = get_ramp_height(ramp_angle, SCREEN_SIZE[0])
-    ramp_length = get_ramp_length(ramp_angle, SCREEN_SIZE[0])
-    ramp_base = math.sqrt(ramp_length ** 2 - ramp_height ** 2)
-    # the base of the ramp is also just the screen width divided by 2
-
-    # todo: move all this drawing coordinates nonsense to its own function
-    ramp_coords = [(screen.get_width() / 4, screen.get_height() * 0.75 + ramp_height / 2),
-                   (screen.get_width() * 0.75, screen.get_height() * 0.75 + ramp_height / 2),
-                   (screen.get_width() * 0.75, screen.get_height() * 0.75 - ramp_height / 2)]
-
-    mass_coords = [(screen.get_width() / 2 + ramp_base / 4,
-                    screen.get_height() * 0.75 - ramp_height / 4),
-                   (ramp_coords[1][0], screen.get_height() * 0.75 - ramp_height / 2),
-                   (ramp_coords[1][0] - (math.sin(rad_angle) * (ramp_length / 4)),
-                    screen.get_height() * 0.75 - ramp_height / 2 -
-                    math.cos(rad_angle) * (ramp_length / 4)),
-                   (screen.get_width() / 2 + ramp_base / 4 -
-                    (math.sin(rad_angle) * (ramp_length / 4)),
-                    screen.get_height() * 0.75 - math.cos(rad_angle) * (ramp_length / 4) -
-                    ramp_height / 4)]
-
     menu_rect1 = pygame.Rect(screen.get_width() * 0.75, 5, 100, 30)
     menu_rect2 = pygame.Rect(screen.get_width() * 0.75 + menu_rect1.width + 10, 5, 100, 30)
     materials = list(MATERIALS.keys())
     mats_menu1 = Menu(materials, menu_rect1)
     mats_menu2 = Menu(materials, menu_rect2)
 
-    ramp_arrow_up_shape = pygame.Rect(300, 300, 25, 65)
-    ramp_arrow_up = ArrowButton(True, ramp_arrow_up_shape, 30)
-    ramp_arrow_down_shape = pygame.Rect(300, 350, 25, 65)
+    ramp_arrow_up_shape = pygame.Rect((screen.get_width() // 5) * 0.75,
+                                      (screen.get_height() // 3) // 5,
+                                      15, 25)
+    ramp_arrow_up = ArrowButton(True, ramp_arrow_up_shape)
+    ramp_arrow_down_shape = pygame.Rect((screen.get_width() // 5) * 0.85,
+                                        (screen.get_height() // 3) // 5,
+                                        15, 25)
     ramp_arrow_down = ArrowButton(False, ramp_arrow_down_shape)
 
     while True:
-        ramp_arrow_up.draw(screen)
-        ramp_arrow_down.draw(screen)
 
-        pygame.draw.polygon(screen, THECOLORS['salmon'], ramp_coords)
-        pygame.draw.polygon(screen, THECOLORS['gold'], mass_coords)
+        draw_ramp_mass(screen, ramp_angle)
 
         mats_menu1.draw(screen)
         mats_menu2.draw(screen)
@@ -82,6 +61,9 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
         else:
             draw_stats(screen, ramp_angle, mass)
 
+        ramp_arrow_up.draw(screen)
+        ramp_arrow_down.draw(screen)
+
         pygame.display.flip()  # updates the display
 
         event = pygame.event.wait()
@@ -92,11 +74,48 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mats_menu1.update(screen, event)
             mats_menu2.update(screen, event)
-            ramp_arrow_up.update(screen, event)
-            ramp_arrow_down.update(screen, event)
+            angle1 = ramp_arrow_up.update(event)
+            angle2 = ramp_arrow_down.update(event)
+            # print(str(angle1) + ' and ' + str(angle2))
             screen.fill('aliceblue')
 
+            if ramp_angle != angle1 and angle1 is not None:
+                ramp_angle = angle1
+                ramp_arrow_down.current_value = angle1
+                # print('here! 1: ' + str(angle1))
+            elif ramp_angle != angle2 and angle2 is not None:
+                ramp_angle = angle2
+                ramp_arrow_up.current_value = angle2
+                # print('here, 2: ' + str(angle2))
+
     pygame.display.quit()
+
+
+def draw_ramp_mass(screen: pygame.Surface, ramp_angle: float) -> None:
+    """Actually drawing ramp and mass."""
+    rad_angle = math.radians(ramp_angle)
+    ramp_height = get_ramp_height(ramp_angle, SCREEN_SIZE[0])
+    ramp_length = get_ramp_length(ramp_angle, SCREEN_SIZE[0])
+    ramp_base = math.sqrt(ramp_length ** 2 - ramp_height ** 2)
+    # the base of the ramp is also just the screen width divided by 2
+
+    ramp_coords = [(screen.get_width() / 4, screen.get_height() * 0.75 + ramp_height / 2),
+                   (screen.get_width() * 0.75, screen.get_height() * 0.75 + ramp_height / 2),
+                   (screen.get_width() * 0.75, screen.get_height() * 0.75 - ramp_height / 2)]
+
+    mass_coords = [(screen.get_width() / 2 + ramp_base / 4,
+                    screen.get_height() * 0.75 - ramp_height / 4),
+                   (ramp_coords[1][0], screen.get_height() * 0.75 - ramp_height / 2),
+                   (ramp_coords[1][0] - (math.sin(rad_angle) * (ramp_length / 4)),
+                    screen.get_height() * 0.75 - ramp_height / 2 -
+                    math.cos(rad_angle) * (ramp_length / 4)),
+                   (screen.get_width() / 2 + ramp_base / 4 -
+                    (math.sin(rad_angle) * (ramp_length / 4)),
+                    screen.get_height() * 0.75 - math.cos(rad_angle) * (ramp_length / 4) -
+                    ramp_height / 4)]
+
+    pygame.draw.polygon(screen, THECOLORS['salmon'], ramp_coords)
+    pygame.draw.polygon(screen, THECOLORS['gold'], mass_coords)
 
 
 def draw_stats(screen: pygame.Surface, ramp_angle: float, mass: float,
