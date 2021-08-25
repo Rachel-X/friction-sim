@@ -11,6 +11,9 @@ from button import ArrowButton
 
 SCREEN_SIZE = 1000, 750  # width, then height
 
+# todo: fix this ramp drawing nonsense; it goes off screen way too fast,
+#  and put a cap on possible angles?
+
 
 def draw_base_set_up(ramp_angle: float, mass: float) -> None:
     """Display a simple ramp with a rectangular mass on it with an angle above
@@ -31,17 +34,26 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
     menu_rect1 = pygame.Rect(screen.get_width() * 0.75, 5, 100, 30)
     menu_rect2 = pygame.Rect(screen.get_width() * 0.75 + menu_rect1.width + 10, 5, 100, 30)
     materials = list(MATERIALS.keys())
-    mats_menu1 = Menu(materials, menu_rect1)
-    mats_menu2 = Menu(materials, menu_rect2)
+    mats_menu1 = Menu(materials, menu_rect1, 'Select Material')
+    mats_menu2 = Menu(materials, menu_rect2, 'Select Material')
 
     ramp_arrow_up_shape = pygame.Rect((screen.get_width() // 5) * 0.75,
                                       (screen.get_height() // 3) // 5,
                                       15, 25)
-    ramp_arrow_up = ArrowButton(True, ramp_arrow_up_shape)
+    ramp_arrow_up = ArrowButton(True, ramp_arrow_up_shape, int(ramp_angle))
     ramp_arrow_down_shape = pygame.Rect((screen.get_width() // 5) * 0.85,
                                         (screen.get_height() // 3) // 5,
                                         15, 25)
-    ramp_arrow_down = ArrowButton(False, ramp_arrow_down_shape)
+    ramp_arrow_down = ArrowButton(False, ramp_arrow_down_shape, int(ramp_angle))
+
+    mass_arrow_up_shape = pygame.Rect((screen.get_width() // 5) * 0.75,
+                                      (screen.get_height() // 3) * 0.4,
+                                      15, 25)
+    mass_arrow_up = ArrowButton(True, mass_arrow_up_shape, int(mass))
+    mass_arrow_down_shape = pygame.Rect((screen.get_width() // 5) * 0.85,
+                                        (screen.get_height() // 3) * 0.4,
+                                        15, 25)
+    mass_arrow_down = ArrowButton(False, mass_arrow_down_shape, int(mass))
 
     while True:
 
@@ -64,6 +76,9 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
         ramp_arrow_up.draw(screen)
         ramp_arrow_down.draw(screen)
 
+        mass_arrow_up.draw(screen)
+        mass_arrow_down.draw(screen)
+
         pygame.display.flip()  # updates the display
 
         event = pygame.event.wait()
@@ -76,17 +91,23 @@ def draw_base_set_up(ramp_angle: float, mass: float) -> None:
             mats_menu2.update(screen, event)
             angle1 = ramp_arrow_up.update(event)
             angle2 = ramp_arrow_down.update(event)
-            # print(str(angle1) + ' and ' + str(angle2))
+            mass1 = mass_arrow_up.update(event)
+            mass2 = mass_arrow_down.update(event)
             screen.fill('aliceblue')
 
             if ramp_angle != angle1 and angle1 is not None:
                 ramp_angle = angle1
                 ramp_arrow_down.current_value = angle1
-                # print('here! 1: ' + str(angle1))
             elif ramp_angle != angle2 and angle2 is not None:
                 ramp_angle = angle2
                 ramp_arrow_up.current_value = angle2
-                # print('here, 2: ' + str(angle2))
+
+            if mass != mass1 and mass1 is not None:
+                mass = mass1
+                mass_arrow_down.current_value = mass1
+            elif mass != mass2 and mass2 is not None:
+                mass = mass2
+                mass_arrow_up.current_value = mass2
 
     pygame.display.quit()
 

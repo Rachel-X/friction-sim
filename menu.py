@@ -14,12 +14,12 @@ class Menu:
     current_text: str
     show_menu: bool
 
-    def __init__(self, options: List[str], shape: pygame.Rect) -> None:
+    def __init__(self, options: List[str], shape: pygame.Rect, start_text: str) -> None:
         """Initialize a new Menu object."""
         self.options = options
         self.shape = shape
         self.current_choice = -1
-        self.current_text = 'Select Option'
+        self.current_text = start_text
         self.show_menu = False
 
     def draw(self, screen: pygame.Surface) -> None:
