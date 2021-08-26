@@ -37,6 +37,8 @@ def get_ramp_height(ramp_angle: float, screen_width: int) -> float:
     0.0
     >>> get_ramp_height(89, 500)
     14322.490407689786
+    >>> get_ramp_height(30, 0)
+    0.0
     """
     rad_angle = math.radians(ramp_angle)
 
@@ -59,6 +61,8 @@ def get_ramp_length(ramp_angle: float, screen_width: int) -> float:
     75.0
     >>> get_ramp_length(89, 500)
     14324.672124637476
+    >>> get_ramp_length(30, 0)
+    0.0
     """
     base = screen_width / 2
     height = get_ramp_height(ramp_angle, screen_width)
@@ -149,27 +153,3 @@ def get_normal_force(mass: float, incline: float, g: float = GRAVITY) -> float:
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
-# def get_weight_comps(m: float, incline: float = 0.0, g: float = GRAVITY) -> \
-#         tuple[float, float, float]:
-#     """Return the weight of the object with the given mass m, as well as components."""
-#     weight = m * g
-#
-#     adj_component = math.cos(incline) * weight  # this is also normal force, going into ramp
-#     opp_component = math.sin(incline) * weight  # component along ramp
-#
-#     return weight, adj_component, opp_component
-#
-#
-# def object_slips(m: float, mu_obj: float, mu_ramp: float, incline: float = 0.0,
-#                  g: float = GRAVITY) -> bool:
-#     """Return whether an object of mass m will slip under given conditions.
-#
-#     Values of mu are from the coefficients.csv file. (They represent static friction.)
-#     """
-#     weight, normal_force, down_ramp_force = get_weight(m, incline, g)
-#
-#     # how does mu work again??
-#     max_friction_force = mu_obj * normal_force
-#
-#     return max_friction_force <= down_ramp_force

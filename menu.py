@@ -52,10 +52,5 @@ class Menu:
                     if opt_rect.collidepoint(mouse_pos):
                         self.current_choice = i
                         self.current_text = self.options[i]
-                        print(self.current_text)
 
             self.show_menu = bool(self.shape.collidepoint(mouse_pos))
-
-            print(self.show_menu)
-
-        self.draw(screen)

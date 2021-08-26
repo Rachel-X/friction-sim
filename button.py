@@ -18,10 +18,6 @@ class ArrowButton:
 
     def draw(self, screen: pygame.Surface) -> None:
         """Draw the button.
-
-        todo: find out the convention for referring to the object itself in
-            a method
-        todo: make the colours easier to change!
         """
         my_image = pygame.image.load('proper_arrow_icon.png').convert_alpha()
         my_image = pygame.transform.scale(my_image, (self.shape.width, self.shape.height))
