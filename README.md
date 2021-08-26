@@ -1,0 +1,2 @@
+# Description
+A simple "friction simulator" I made to practice using Pygame, featuring a mass set on a ramp. Select two materials, change the angle of the ramp and the mass of the block, and the simulator will tell you whether the mass slips down the ramp or not.
